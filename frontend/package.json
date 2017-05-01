@@ -1,0 +1,18 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "frontend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tommy1994111",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-pug": "^3.3.0",
+    "gulp-sass": "^3.1.0"
+  }
+}
