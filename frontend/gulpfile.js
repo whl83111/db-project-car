@@ -18,7 +18,7 @@ gulp.task('default', function() {
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('dist/css'));
     gulp.src("pug/**/*.pug")
-        .pipe(pug())
+        .pipe(pug({ pretty: true }))
         .pipe(gulp.dest('dist'))
     
     // Browser source
