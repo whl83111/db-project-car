@@ -1,19 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <title></title>
+    <title>隨便買好車網</title>
+    <meta charset="utf8">
     <script type="text/javascript">if (foo) bar(1 + 5)</script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>Pug - node template engine</h1>
-    <div class="col" id="container">
-      <p>Get on it!</p>
-      <p>
-        Pug is a terse and simple templating language with a
-        strong focus on performance and powerful features.
-      </p>
-    </div>
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-primary">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand" href="#">隨便買好車網</a>
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active"><a class="nav-link" href="#">首頁<span class="sr-only">(current)</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="#">中古車</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於</a></li>
+        </ul>
+        <form class="form-inline">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <div class="jumbotron">
+          <h1 class="display-3">歡迎來到隨便買好車網</h1>
+          <p>這是一個可以讓你隨便買都是市場最低價的賣車網.讓你買的安心又開心</p>
+          <p><a class="btn btn-primary btn-lg" href="#">更多關於我們</a></p>
+        </div>
+        <blockquote class="blockquote">
+          <p>熱門車款</p>
+          <footer class="blockquote-footer">過了這個村 就沒
+            <cite title="Source Title">這個店了</cite>
+          </footer>
+        </blockquote>
+        <table class="table table-striped table-hover table-bordered">
+          <thead class="thead-inverse">
+            <tr>
+              <th>#</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+              <th>Column heading</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="table-inf">
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="table-success">
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="table-danger">
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="table-warning">
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+            <tr class="table-active">
+              <td>1</td>
+              <td>Column content</td>
+              <td>Column content</td>
+              <td>Column content</td>
+            </tr>
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"> <a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </nav>
   </body>
 </html>
