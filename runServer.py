@@ -11,9 +11,12 @@ app = Flask(__name__, template_folder = FRONTEND_PATH,
 def hello():
     return render_template('index.html')
 
-@app.route("/select/")
+@app.route("/api/select", methods = ['GET', 'POST'])
 def select():
-    return {'1':123}
+    if request.method == 'GET':
+        return 'GET'
+    elif request.method == 'POST':
+        return 'POST'
 
 if __name__ == "__main__":
     print(FRONTEND_PATH)
