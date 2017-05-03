@@ -1,4 +1,4 @@
-# from backend import *
+from backend import connectToMySQL
 from flask import Flask, render_template
 import os
 
