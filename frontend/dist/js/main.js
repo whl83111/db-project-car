@@ -1,7 +1,6 @@
-Vue.config.delimiters = ['<%', '%>']
+Vue.options.delimiters = ['<%', '%>'];
 
 var app = new Vue({
-    delimiters: ['<%', '%>'],
     el: '#app',
     data: {
         cars: [
