@@ -43,6 +43,11 @@ class connectMySQL():
                     ).strip()
                     cursor.execute(sql)
                     self.executeResult = cursor.fetchall()
+            elif sqlDict['type'] == "UPDATE":
+                # UPDATE "表格"
+                # SET "欄位1" = [值1], "欄位2" = [值2]
+                # WHERE "條件";
+                pass
         except:
             print('Error from executeSQL!')
 
