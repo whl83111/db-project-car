@@ -4,6 +4,11 @@ import os
 
 FRONTEND_PATH = os.path.join('frontend', 'dist')
 
+HOST = 'localhost'
+USER = 'user'
+PASSWORD = 'password'
+DB = 'cars'
+
 app = Flask(__name__, template_folder=FRONTEND_PATH,
             static_folder=FRONTEND_PATH)
 
@@ -23,10 +28,10 @@ def select():
     if request.method == 'GET':
         return 'select'
     elif request.method == 'POST':
-        mysql = MySQL(host = '192.168.1.100',
-                      user = 'mac',
-                      password = 'x94jo6cl6',
-                      db = 'cars'
+        mysql = MySQL(host = HOST,
+                      user = USER,
+                      password = PASSWORD,
+                      db = DB
                       )
         if request.json == {}:
             mysql.executeSQL({
@@ -80,10 +85,10 @@ def distinct():
     if request.method == 'GET':
         return 'distinct'
     elif request.method == 'POST':
-        mysql = MySQL(host='192.168.1.100',
-                      user='mac',
-                      password='x94jo6cl6',
-                      db='cars'
+        mysql = MySQL(host = HOST,
+                      user = USER,
+                      password = PASSWORD,
+                      db = DB
                       )
         mysql.executeSQL({
             'type': 'SELECT DISTINCT',
