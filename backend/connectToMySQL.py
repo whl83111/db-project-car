@@ -57,6 +57,7 @@ class connectToMySQL():
                             '`{}`'.format(sqlDict['targetTable']),
                             sqlDict['addition'],
                         ).strip()
+                    print('\n\n', sql, '\n\n')
                     cursor.execute(sql)
                     self.executeResult = cursor.fetchall()
                     self.connection.close()
@@ -78,6 +79,3 @@ class connectToMySQL():
         # except:
             # print(sys.exc_info())
             # print('Error from executeSQL!')
-
-    def closeConnection(self):
-        self.connection.close()

@@ -40,7 +40,7 @@ def select():
                 'type': 'SELECT',
                 'targetColumns': '*',
                 'targetTable': 'data',
-                'addition': 'WHERE ({}) ORDER BY `updateTime` LIMIT 0, 10'
+                'addition': '{} ORDER BY `updateTime` LIMIT 0, 10'
             }
             additions = list()
             if (request.json['brand']):
@@ -67,7 +67,11 @@ def select():
             if (request.json['displacement']['max']):
                 additions.append(
                     '`displacement` <= "{}"'.format(request.json['displacement']['max']))
-            sqlDict['addition'] = sqlDict['addition'].format(' AND '.join(additions))
+            if additions != list():
+                sqlDict['addition'] = sqlDict['addition'].format("WHERE ({})".format(' AND '.join(additions)))
+            else:
+                sqlDict['addition'] = sqlDict['addition'].format('')
+            # print('\n\n', sqlDict['addition'], '\n\n')
             mysql.executeSQL(sqlDict)
         return jsonify(mysql.executeResult)
 
