@@ -1,0 +1,7 @@
+#jumbotron {
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/50/Toyota_Hilux_crash_4.jpg);
+  background-position: center bottom;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+  background-size: cover;
+  background-repeat: no-repeat; }

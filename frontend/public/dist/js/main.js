@@ -1,14 +1,21 @@
-"use strict";
+'use strict';
 
-var _vue = require("vue");
+Vue.options.delimiters = ['<%', '%>'];
 
-var _vue2 = _interopRequireDefault(_vue);
+var app = new Vue({
+    el: '#app',
+    data: {
+        cars: [{
+            id: 3,
+            brand: 'toyota',
+            name: 'Supra',
+            shift: 'manual'
+        }, {
+            id: 4,
+            brand: 'toyota',
+            name: 'AE86',
+            shift: 'manual'
+        }]
+    }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var title = new _vue2.default({
-	el: "title",
-	data: {
-		ti: "隨便買好車網"
-	}
 });
