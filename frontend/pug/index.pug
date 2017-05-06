@@ -84,6 +84,9 @@ html
                             td <% car.years %>
                             td <% car.displacement %>
                             td <% car.regions %>
+                .alert.alert-info(role='alert', v-if="isEmpty")
+                    |  查無資料!
+
             
             nav(aria-label="Page navigation example")
                 ul.pagination.justify-content-center

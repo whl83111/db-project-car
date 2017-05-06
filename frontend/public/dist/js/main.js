@@ -45,6 +45,11 @@ var search = new Vue({
         sendSearch: function sendSearch() {
             axios.post('api/select', this.selected).then(function (response) {
                 app.cars = response.data;
+                if (app.cars.length != 0) {
+                    app.isEmpty = false;
+                } else {
+                    app.isEmpty = true;
+                }
             }).catch(function (error) {
                 console.log(error);
             });
@@ -58,17 +63,20 @@ var search = new Vue({
 var app = new Vue({
     el: '#app',
     data: {
-        cars: []
+        cars: [],
+        isEmpty: false
     },
     beforeMount: function beforeMount() {
-        var temp = this;
-        axios.post('api/select', {}).then(function (response) {
-            console.log(response.data);
-            temp.cars = response.data;
-        }).catch(function (error) {
-            console.log(error);
-        });
+        this.initTable();
     },
-    methods: {}
-
+    methods: {
+        initTable: function initTable() {
+            var temp = this;
+            axios.post('api/select', {}).then(function (response) {
+                temp.cars = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+    }
 });
