@@ -6,113 +6,96 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar navbar-toggleable-md navbar-inverse bg-primary">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand" href="#">隨便買好車網</a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><a class="navbar-brand" href="/">隨便買好車網</a>
     </nav>
     <div class="jumbotron" id="jumbotron">
       <h1 class="display-3">歡迎來到隨便買好車網</h1>
       <p>這是一個可以讓你隨便買都是市場最低價的賣車網.讓你買的安心又開心</p>
-      <p></p>
     </div>
     <div class="container-fluid">
-      <div class="card">
+      <div class="card" id="search">
         <div class="card-header">條件搜尋</div>
         <div class="card-block">
           <div class="row">
             <div class="col form-group">
               <label for="select-brand">廠牌</label>
-              <select class="form-control" id="select-brand">
-                <option>TOYOTA</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+              <select class="form-control" id="select-brand" v-model="selected.brand">
+                <option></option>
+                <option v-for="brand in brands"><% brand %></option>
               </select>
             </div>
             <div class="col form-group">
               <label for="select-shift">排檔方式</label>
-              <select class="form-control" id="select-shift">
-                <option>手排</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+              <select class="form-control" id="select-shift" v-model="selected.shift">
+                <option></option>
+                <option v-for="shift in shifts"><% shift %></option>
               </select>
             </div>
           </div>
           <div class="row">
             <div class="col form-group">
               <label for="year">年份</label>
-              <select class="form-control" id="year">
-                <option>1995</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+              <select class="form-control" id="year" v-model="selected.year">
+                <option></option>
+                <option v-for="year in years"><% year %></option>
               </select>
             </div>
             <div class="col form-group">
               <label for="select-region">地區</label>
-              <select class="form-control" id="select-region">
-                <option>台北市</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
+              <select class="form-control" id="select-region" v-model="selected.region">
+                <option></option>
+                <option v-for="region in regions"><% region %></option>
               </select>
             </div>
           </div>
           <div class="row">
             <div class="col form-group">
               <label>價格</label><br>
-              <input id="min-price" type="number" name="min-price" min="0">萬 ~
-              <input id="max-price" type="number" name="max-price" min="0">萬
+              <input id="min-price" type="number" name="min-price" min="0" v-model="selected.price.min">萬 ~ 
+              <input id="max-price" type="number" name="max-price" min="0" v-model="selected.price.max">萬
             </div>
             <div class="col form-group">
               <label>排氣量</label><br>
-              <input id="min-displacement" type="number" name="min-displacement" min="0">c.c. ~
-              <input id="max-displacement" type="number" name="max-displacement" min="0">c.c.
+              <input id="min-displacement" type="number" name="min-displacement" min="0" v-model="selected.displacement.min">c.c. ~ 
+              <input id="max-displacement" type="number" name="max-displacement" min="0" v-model="selected.displacement.max">c.c.
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" type="submit">搜尋</button>
+        <button class="btn btn-primary" type="submit" @click="sendSearch">搜尋</button>
       </div>
-      <p></p>
-      <blockquote class="blockquote">
-        <p>熱門車款</p>
-        <footer class="blockquote-footer">過了這個村 就沒
-          <cite title="Source Title">這個店了</cite>
-        </footer>
-      </blockquote>
-      <table class="table table-striped table-hover table-bordered" id="app">
-        <thead class="thead-inverse">
-          <tr>
-            <th>編號</th>
-            <th>廠牌</th>
-            <th>車型</th>
-            <th>排檔</th>
-            <th>價格</th>
-            <th>年份</th>
-            <th>排氣量</th>
-            <th>地區</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="car in cars">
-            <td><% car.id %></td>
-            <td><% car.brand %></td>
-            <td><% car.name %></td>
-            <td><% car.shift %></td>
-            <td>94.87</td>
-            <th>2017</th>
-            <th>2000</th>
-            <th>台北市</th>
-          </tr>
-        </tbody>
-      </table>
+      <div id="app">
+        <table class="table table-striped table-hover table-bordered">
+          <thead class="thead-inverse">
+            <tr>
+              <th>圖片</th>
+              <th>廠牌</th>
+              <th>車型</th>
+              <th>排檔</th>
+              <th>價格</th>
+              <th>年份</th>
+              <th>排氣量</th>
+              <th>地區</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="car in cars">
+              <td><img :src="car.imgLink"></td>
+              <td><% car.brands %></td>
+              <td><% car.carModel %></td>
+              <td><% car.shifts %></td>
+              <td><% car.price %></td>
+              <td><% car.years %></td>
+              <td><% car.displacement %></td>
+              <td><% car.regions %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
           <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>

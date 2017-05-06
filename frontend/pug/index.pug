@@ -3,104 +3,87 @@ html
     head
         title 隨便買好車網
         meta(charset="utf8")
-        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous")
-        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css", integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ", crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js", integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn", crossorigin="anonymous")
         script(src="https://unpkg.com/vue/dist/vue.js")
-        script(src="https://unpkg.com/axios/dist/axios.min.js.js")
+        script(src="https://unpkg.com/axios/dist/axios.min.js")
         link(href="{{ url_for('static', filename='css/main.css') }}", rel="stylesheet")
     body
         nav.navbar.navbar-toggleable-md.navbar-inverse.bg-primary
-            button.navbar-toggler.navbar-toggler-right(type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation")
+            button.navbar-toggler.navbar-toggler-right(type="button", data-toggle="collapse", data-target="#navbarColor01", aria-controls="navbarColor01", aria-expanded="false", aria-label="Toggle navigation")
                 span.navbar-toggler-icon
-            a.navbar-brand(href="#") 隨便買好車網
+            a.navbar-brand(href="/") 隨便買好車網
 
         .jumbotron#jumbotron
             h1.display-3 歡迎來到隨便買好車網
             p 這是一個可以讓你隨便買都是市場最低價的賣車網.讓你買的安心又開心
-            p
         
         .container-fluid
-            .card
+            .card#search
                 .card-header 條件搜尋
                 .card-block
                     .row
                         .col.form-group
                             label(for='select-brand') 廠牌
-                            select#select-brand.form-control
-                                option TOYOTA
-                                option 2
-                                option 3
-                                option 4
-                                option 5
+                            select#select-brand.form-control(v-model="selected.brand")
+                                option
+                                option(v-for='brand in brands') <% brand %>
                         .col.form-group
                             label(for='select-shift') 排檔方式
-                            select#select-shift.form-control
-                                option 手排
-                                option 2
-                                option 3
-                                option 4
-                                option 5
+                            select#select-shift.form-control(v-model="selected.shift")
+                                option
+                                option(v-for='shift in shifts') <% shift %>
                     .row
                         .col.form-group
                             label(for='year') 年份
-                            select#year.form-control
-                                option 1995
-                                option 2
-                                option 3
-                                option 4
-                                option 5
+                            select#year.form-control(v-model="selected.year")
+                                option
+                                option(v-for='year in years') <% year %>
                         .col.form-group
                             label(for='select-region') 地區
-                            select#select-region.form-control
-                                option 台北市
-                                option 2
-                                option 3
-                                option 4
+                            select#select-region.form-control(v-model="selected.region")
+                                option
+                                option(v-for='region in regions') <% region %>
                     .row
                         .col.form-group
                             label 價格
                             br
-                            input#min-price(type='number', name='min-price', min='0')
-                            | 萬 ~
-                            input#max-price(type='number', name='max-price', min='0')
+                            input#min-price(type='number', name='min-price', min='0', v-model='selected.price.min')
+                            | 萬 ~ 
+                            input#max-price(type='number', name='max-price', min='0', v-model='selected.price.max')
                             | 萬
                         .col.form-group
                             label 排氣量
                             br
-                            input#min-displacement(type='number', name='min-displacement', min='0')
-                            | c.c. ~
-                            input#max-displacement(type='number', name='max-displacement', min='0')
+                            input#min-displacement(type='number', name='min-displacement', min='0', v-model='selected.displacement.min')
+                            | c.c. ~ 
+                            input#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.displacement.max')
                             | c.c.
 
-                button.btn.btn-primary(type='submit') 搜尋
-            
-            p
-            blockquote.blockquote
-                p 熱門車款
-                footer.blockquote-footer 過了這個村 就沒
-                    cite(title="Source Title") 這個店了
-            
-            table.table.table-striped.table-hover.table-bordered#app
-                thead.thead-inverse
-                    tr
-                        th 編號
-                        th 廠牌
-                        th 車型
-                        th 排檔
-                        th 價格
-                        th 年份
-                        th 排氣量
-                        th 地區
-                tbody
-                    tr(v-for="car in cars")
-                        td <% car.id %>
-                        td <% car.brand %>
-                        td <% car.name %>
-                        td <% car.shift %>
-                        td 94.87
-                        th 2017
-                        th 2000
-                        th 台北市
+                button.btn.btn-primary(type='submit', @click="sendSearch") 搜尋
+            #app
+                table.table.table-striped.table-hover.table-bordered
+                    thead.thead-inverse
+                        tr
+                            th 圖片
+                            th 廠牌
+                            th 車型
+                            th 排檔
+                            th 價格
+                            th 年份
+                            th 排氣量
+                            th 地區
+                    tbody
+                        tr(v-for="car in cars")
+                            td
+                                img(:src="car.imgLink")
+                            td <% car.brands %>
+                            td <% car.carModel %>
+                            td <% car.shifts %>
+                            td <% car.price %>
+                            td <% car.years %>
+                            td <% car.displacement %>
+                            td <% car.regions %>
             
             nav(aria-label="Page navigation example")
                 ul.pagination.justify-content-center
