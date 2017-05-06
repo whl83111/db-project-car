@@ -1,11 +1,12 @@
 import pymysql.cursors
+import sys
 
 class connectMySQL():
     def __init__(self, host, user, password, db):
         self.host = host
         self.user = user
         self.password = password
-        sef.db = db
+        self.db = db
         self.connection = self.connectMySQL()
         self.executeResult = list()
     
@@ -19,6 +20,7 @@ class connectMySQL():
                 cursorclass = pymysql.cursors.DictCursor)
         except:
             print('Error from ConnectMySQL !')
+            print(sys.exc_info())
 
     def executeSQL(self, sqlDict):
         try:
@@ -38,6 +40,16 @@ class connectMySQL():
                 with connection.cursor() as cursor:
                     sql = "SELECT {} FROM {} {}".format(
                         ','.join(['`{}`'.format(column) for column in sqlDict['targetCloumns']]),
+                        '`{}`'.format(sqlDict['targetTable']),
+                        sqlDict['addition'],
+                    ).strip()
+                    cursor.execute(sql)
+                    self.executeResult = cursor.fetchall()
+            elif sqlDict['type'] == "SELECT DISTINCT":
+                with connection.cursor() as cursor:
+                    sql = "SELECT DISTINCT {} FROM {} {}".format(
+                        ','.join(['`{}`'.format(column)
+                                  for column in sqlDict['targetCloumns']]),
                         '`{}`'.format(sqlDict['targetTable']),
                         sqlDict['addition']
                     ).strip()
