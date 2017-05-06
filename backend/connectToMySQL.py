@@ -2,7 +2,7 @@ import pymysql.cursors
 import sys
 
 
-class connectMySQL():
+class connectToMySQL():
     def __init__(self, host, user, password, db):
         self.host = host
         self.user = user
