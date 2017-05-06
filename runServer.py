@@ -1,5 +1,5 @@
 from backend.connectToMySQL import connectToMySQL as MySQL
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import os
 
 FRONTEND_PATH = os.path.join('frontend', 'dist')
@@ -13,7 +13,6 @@ app.config.update(
     SEND_FILE_MAX_AGE_DEFAULT=1,
 )
 
-
 @app.route("/")
 def hello():
     return render_template('index.html')
@@ -22,29 +21,73 @@ def hello():
 @app.route("/api/select", methods=['GET', 'POST'])
 def select():
     if request.method == 'GET':
-        return 'GET'
+        return 'select'
     elif request.method == 'POST':
-        mysql = MySQL(host='localhost',
-                      user='root',
-                      password='root',
-                      db='cars'
+        mysql = MySQL(host = '192.168.1.100',
+                      user = 'mac',
+                      password = 'x94jo6cl6',
+                      db = 'cars'
                       )
-        return 'POST'
-
+        if request.json == {}:
+            mysql.executeSQL({
+                'type': 'SELECT',
+                'targetColumns': '*',
+                'targetTable': 'data',
+                'addition': 'ORDER BY `updateTime` LIMIT 0, 10'
+            })
+        else:
+            sqlDict = {
+                'type': 'SELECT',
+                'targetColumns': '*',
+                'targetTable': 'data',
+                'addition': 'WHERE ({}) ORDER BY `updateTime` LIMIT 0, 10'
+            }
+            additions = list()
+            if (request.json['brand']):
+                additions.append(
+                    '`brands` = "{}"'.format(request.json['brand']))
+            if (request.json['shift']):
+                additions.append(
+                    '`shifts` = "{}"'.format(request.json['shift']))
+            if (request.json['year']):
+                additions.append(
+                    '`years` >= "{}"'.format(request.json['year']))
+            if (request.json['region']):
+                additions.append(
+                    '`regions` = "{}"'.format(request.json['region']))
+            if (request.json['price']['min']):
+                additions.append(
+                    '`price` >= "{}"'.format(request.json['price']['min']))
+            if (request.json['price']['max']):
+                additions.append(
+                    '`price` <= "{}"'.format(request.json['price']['max']))
+            if (request.json['displacement']['min']):
+                additions.append(
+                    '`displacement` >= "{}"'.format(request.json['displacement']['min']))
+            if (request.json['displacement']['max']):
+                additions.append(
+                    '`displacement` <= "{}"'.format(request.json['displacement']['max']))
+            sqlDict['addition'] = sqlDict['addition'].format(' AND '.join(additions))
+            mysql.executeSQL(sqlDict)
+        return jsonify(mysql.executeResult)
 
 @app.route("/api/distinct", methods=['GET', 'POST'])
-def select():
+def distinct():
     if request.method == 'GET':
-        return 'GET'
+        return 'distinct'
     elif request.method == 'POST':
-        mysql = MySQL(host='localhost',
-                      user='root',
-                      password='root',
+        mysql = MySQL(host='192.168.1.100',
+                      user='mac',
+                      password='x94jo6cl6',
                       db='cars'
                       )
-        mysql.executeSQL()
-        return 'POST'
-
+        mysql.executeSQL({
+            'type': 'SELECT DISTINCT',
+            'targetColumn': request.json['targetColumn'],
+            'targetTable': 'data',
+            'addition': ''
+        })
+        return jsonify(mysql.executeResult)
 
 @app.route("/api/insert", methods=['GET', 'POST'])
 def insert():

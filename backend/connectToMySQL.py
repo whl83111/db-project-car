@@ -1,6 +1,6 @@
 import pymysql.cursors
 import sys
-
+import itertools
 
 class connectToMySQL():
     def __init__(self, host, user, password, db):
@@ -8,7 +8,12 @@ class connectToMySQL():
         self.user = user
         self.password = password
         self.db = db
-        self.connection = self.connectMySQL()
+        self.connection = pymysql.connect(host=self.host,
+                                          user=self.user,
+                                          password=self.password,
+                                          db=self.db,
+                                          charset='utf8mb4',
+                                          cursorclass=pymysql.cursors.DictCursor)
         self.executeResult = list()
 
     def connectMySQL(self):
@@ -24,7 +29,7 @@ class connectToMySQL():
             print(sys.exc_info())
 
     def executeSQL(self, sqlDict):
-        try:
+        # try:
             if sqlDict['type'] == "INSERT INTO":
                 with self.connection.cursor() as cursor:
                     sql = 'INSERT INTO `{}` {} VALUES {} {}'.format(
@@ -37,33 +42,42 @@ class connectToMySQL():
                     ).strip()
                     cursor.execute(sql)
                     self.connection.commit()
+                    self.connection.close()
             elif sqlDict['type'] == "SELECT":
-                with connection.cursor() as cursor:
-                    sql = "SELECT {} FROM {} {}".format(
-                        ','.join(['`{}`'.format(column)
-                                  for column in sqlDict['targetCloumns']]),
-                        '`{}`'.format(sqlDict['targetTable']),
-                        sqlDict['addition'],
-                    ).strip()
+                with self.connection.cursor() as cursor:
+                    if sqlDict['targetColumns'] != '*':
+                        sql = "SELECT {} FROM {} {}".format(
+                            ','.join(['`{}`'.format(column)
+                                    for column in sqlDict['targetColumns']]),
+                            '`{}`'.format(sqlDict['targetTable']),
+                            sqlDict['addition'],
+                        ).strip()
+                    else:
+                        sql = "SELECT * FROM {} {}".format(
+                            '`{}`'.format(sqlDict['targetTable']),
+                            sqlDict['addition'],
+                        ).strip()
                     cursor.execute(sql)
                     self.executeResult = cursor.fetchall()
+                    self.connection.close()
             elif sqlDict['type'] == "SELECT DISTINCT":
-                with connection.cursor() as cursor:
+                with self.connection.cursor() as cursor:
                     sql = "SELECT DISTINCT {} FROM {} {}".format(
-                        ','.join(['`{}`'.format(column)
-                                  for column in sqlDict['targetCloumns']]),
-                        '`{}`'.format(sqlDict['targetTable']),
+                        '`{}`'.format(sqlDict['targetColumn']),
+                        '`data`',
                         sqlDict['addition']
                     ).strip()
                     cursor.execute(sql)
-                    self.executeResult = cursor.fetchall()
+                    self.executeResult = list(filter(lambda x : x != '', sorted([list(result.values())[0] for result in cursor.fetchall()])))
+                    self.connection.close()
             elif sqlDict['type'] == "UPDATE":
                 # UPDATE "表格"
                 # SET "欄位1" = [值1], "欄位2" = [值2]
                 # WHERE "條件";
                 pass
-        except:
-            print('Error from executeSQL!')
+        # except:
+            # print(sys.exc_info())
+            # print('Error from executeSQL!')
 
     def closeConnection(self):
         self.connection.close()
