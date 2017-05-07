@@ -57,25 +57,351 @@
           <p style="font-size: 100px; position: relative; bottom: 100px;">Repository</p><a href="https://github.com/tommy1994111/db-project-car" style="font-size: 60px; position: relative; bottom: 100px;"><i class="fa fa-github" aria-hidden="true"></i> tommy1994111/db-project-car</a>
         </section>
         <section>
-          <h1>2. 建立資料夾架構</h1>
+          <section>
+            <h1>2. 建立資料夾架構</h1>
+          </section>
+          <section><img src="img/directory.png" height="40%" width="40%" style="position: relative;"></section>
         </section>
         <section>
           <h1>3. 功能發想</h1>
         </section>
         <section>
-          <h1>4. 建立資料庫(MySQL)</h1>
+          <h1>4. 建立資料庫</h1><img src="img/schema.png">
         </section>
         <section>
           <h1>5. 資料抓取(爬蟲)</h1>
+          <pre><code class="hljs python">from bs4 import BeautifulSoup as bs
+import requests as rq
+import json
+import urllib
+from connectToMySQL import connectToMySQL, executeSQL
+from collections import OrderedDict
+MAIN_LINK = 'http://www.sum.com.tw/'
+
+def getSoup(link):
+    '''取得response且使用BeautifulSoup parse HTML'''
+    response = rq.get(link)
+    soup = bs(response.text, 'lxml')
+    return soup
+
+mainSoup = getSoup(MAIN_LINK)
+
+# 取得廠牌列表
+brandList = [brand.get('value') for brand in mainSoup.select('select#brand')[0].select('option')]
+
+def fetchBrandData(brand):
+    '''取得廠牌之二手車資料後傳入資料庫'''
+    page = 1
+    searchLink = 'http://www.sum.com.tw/result1_all.php?brand={}&year=1995&year1=2017&page={}'
+    brandLink = urllib.parse.quote(searchLink.format(brand, page), safe = '=/:?&')
+    print(brandLink)
+    brandSoup = getSoup(brandLink)
+    try:
+        totalPages = int(brandSoup.select('p.goTo')[0].select('b')[1].text)
+    except IndexError:
+        totalPages = 0
+    print(totalPages)
+    def fetchUlData(soup):
+        data = OrderedDict([
+                ('dataLink' , urllib.parse.quote(MAIN_LINK + soup.select('a')[0].get('href'), safe = '=/:?&')),
+                ('imgLink' , urllib.parse.quote(MAIN_LINK + str(soup.select('img')[0].get('data-original')), safe = '=/:?&')),
+                ('brand', brand),
+                ('carModel' , soup.select('li.carInfo')[0].select('p')[0].text.strip().replace(brand + ' ', '').replace('廂車', '').replace('貨車', '')),
+                ('merchant' , soup.select('p.iconArrow01')[0].select('a')[0].text.strip()),
+                ('shift' , soup.select('p.iconArrow01')[1].text[3:].strip()),
+                ('updateTime' , soup.select('p.iconArrow01')[2].text[7:].strip()),
+                ('price' , soup.select('li.carPrice')[0].text.strip().replace('萬', '')),
+                ('year' , soup.select('li.carYear')[0].text.strip()),
+                ('displacement' , soup.select('li.carL')[0].text.strip()), # 排氣量
+                ('region' , soup.select('li.carRegion')[0].text.strip()),
+                # http://www.sum.com.tw/images/icon/iconMark06.gif
+            ])
+        return data
+    connection = connectToMySQL()
+    if totalPages != 0:
+        for page in range(1, totalPages + 1):
+            soup = getSoup(searchLink.format(brand, page))
+            for dataSoup in soup.select('div.searchResults ul'):
+                data = fetchUlData(dataSoup)
+                if data['price'] == '已收訂':
+                    pass
+                else:
+                    sql = "INSERT INTO `data` (`dataLink`, `imgLink`, `brand`, `carModel`, `merchant`, `shift`, `updateTime`, `price`, `year`, `displacement`, `region`) VALUES {}".format(tuple(data.values()))
+                    print(sql)
+                    executeSQL(connection, sql)
+    else:
+        pass
+    connection.close()
+
+print(len(brandList))
+count = 0
+for brand in brandList:
+    count += 1
+    print(count, '|', brand)
+    if brand != '':
+        fetchBrandData(brand)</code></pre>
         </section>
         <section>
-          <h1>6. 建立前端</h1>
+          <h1>6. 建立前端</h1><code>index.html</code><img src="img/index_page.png">
         </section>
         <section>
-          <h1>7. 建立後端</h1>
+          <h1>7. 建立後端</h1><code>runServer.py</code>
+          <pre><code class="hljs python">from backend.connectToMySQL import connectToMySQL as MySQL
+from flask import Flask, render_template, request, jsonify
+import os
+
+FRONTEND_PATH = os.path.join('frontend', 'dist')
+
+HOST = 'localhost'
+USER = 'user'
+PASSWORD = 'password'
+DB = 'cars'
+
+app = Flask(__name__, template_folder=FRONTEND_PATH,
+            static_folder=FRONTEND_PATH)
+
+app.config.update(
+    DEBUG=True,
+    TEMPLATES_AUTO_RELOAD=True,
+    SEND_FILE_MAX_AGE_DEFAULT=1,
+)
+
+@app.route("/")
+def hello():
+    return render_template('index.html')
+
+
+@app.route("/api/select", methods=['GET', 'POST'])
+def select():
+    if request.method == 'GET':
+        return 'select'
+    elif request.method == 'POST':
+        mysql = MySQL(host = HOST,
+                    user = USER,
+                    password = PASSWORD,
+                    db = DB
+                    )
+        if request.json == {}:
+            mysql.executeSQL({
+                'type': 'SELECT',
+                'targetColumns': '*',
+                'targetTable': 'data',
+                'addition': 'ORDER BY `updateTime` LIMIT 0, 10'
+            })
+        else:
+            sqlDict = {
+                'type': 'SELECT',
+                'targetColumns': '*',
+                'targetTable': 'data',
+                'addition': '{} ORDER BY `updateTime` LIMIT {}, 10'
+            }
+            additions = list()
+            if (request.json['brand']):
+                additions.append(
+                    '`brands` = "{}"'.format(request.json['brand']))
+            if (request.json['shift']):
+                additions.append(
+                    '`shifts` = "{}"'.format(request.json['shift']))
+            if (request.json['year']):
+                additions.append(
+                    '`years` >= "{}"'.format(request.json['year']))
+            if (request.json['region']):
+                additions.append(
+                    '`regions` = "{}"'.format(request.json['region']))
+            if (request.json['price']['min']):
+                additions.append(
+                    '`price` >= "{}"'.format(request.json['price']['min']))
+            if (request.json['price']['max']):
+                additions.append(
+                    '`price` <= "{}"'.format(request.json['price']['max']))
+            if (request.json['displacement']['min']):
+                additions.append(
+                    '`displacement` >= "{}"'.format(request.json['displacement']['min']))
+            if (request.json['displacement']['max']):
+                additions.append(
+                    '`displacement` <= "{}"'.format(request.json['displacement']['max']))
+            if additions != list():
+                sqlDict['addition'] = sqlDict['addition'].format("WHERE ({})".format(
+                    ' AND '.join(additions)), (request.json['page'] - 1) * 10)
+            else:
+                sqlDict['addition'] = sqlDict['addition'].format('', (request.json['page'] - 1) * 10)
+            # print('\n\n', sqlDict['addition'], '\n\n')
+            mysql.executeSQL(sqlDict)
+        return jsonify(mysql.executeResult)
+
+@app.route("/api/distinct", methods=['GET', 'POST'])
+def distinct():
+    if request.method == 'GET':
+        return 'distinct'
+    elif request.method == 'POST':
+        mysql = MySQL(host = HOST,
+                    user = USER,
+                    password = PASSWORD,
+                    db = DB
+                    )
+        mysql.executeSQL({
+            'type': 'SELECT DISTINCT',
+            'targetColumn': request.json['targetColumn'],
+            'targetTable': 'data',
+            'addition': ''
+        })
+        return jsonify(mysql.executeResult)
+
+@app.route("/api/countPage", methods=['GET', 'POST'])
+def countPage():
+    # TODO: 修改之
+    if request.method == 'GET':
+        return 'countPage'
+    elif request.method == 'POST':
+        mysql = MySQL(host=HOST,
+                    user=USER,
+                    password=PASSWORD,
+                    db=DB
+                    )
+        mysql.executeSQL({
+            'type': 'SELECT COUNT(*)',
+            'targetTable': 'data',
+            'addition': ''
+        })
+        return jsonify(mysql.executeResult)
+
+@app.route("/api/insert", methods=['GET', 'POST'])
+def insert():
+    pass
+
+if __name__ == "__main__":
+    app.run()
+</code></pre>
         </section>
         <section>
-          <h1>8. 連接前後端</h1>
+          <h1>8. 連接前後端</h1><code>main.js</code>
+          <pre><code class="hljs js">Vue.options.delimiters = ['<%', '%>'];
+
+const searchInit = {
+    brand: null,
+    shift: null,
+    year: null,
+    region: null,
+    price: {
+        min: null,
+        max: null
+    },
+    displacement: {
+        min: null,
+        max: null
+    },
+    page: 1
+};
+
+var search = new Vue({
+    el: '#search',
+    data: {
+        brands: [],
+        shifts: [],
+        years: [],
+        regions: [],
+        selected: searchInit
+    },
+    beforeMount: function () {
+        this.distinct('brands');
+        this.distinct('shifts');
+        this.distinct('years');
+        this.distinct('regions');
+    },
+    beforeUpdate: function () {
+        
+    },
+    methods: {
+        distinct: function (target) {
+            let temp = this;
+            axios.post('api/distinct', {
+                targetColumn: target
+            })
+            .then(function (response) {
+                temp[target] = response.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+        sendSearch: function () {
+            axios.post('api/select', this.selected)
+                .then(function (response) {
+                    app.cars = response.data;
+                    if (app.cars.length != 0) {
+                        app.isEmpty = false;
+                    }
+                    else {
+                        app.isEmpty = true;
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        sendNewSearch: function () {
+            pageButton.currentPage = 1;
+            this.changePage();
+        },
+        changePage: function () {
+            this.selected.page = pageButton.currentPage;
+            this.sendSearch();
+        }
+    }
+});
+
+var app = new Vue({
+    el: '#app',
+    data: {
+        cars: [],
+        isEmpty: false,
+    },
+    beforeMount: function () {
+        this.initTable();
+    },
+    methods:{
+        initTable: function () {
+            let temp = this;
+            axios.post('api/select', {})
+                .then(function (response) {
+                    temp.cars = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    }
+});
+
+var pageButton = new Vue({
+    el: '#pageButton',
+    data: {
+        currentPage: 1
+    },
+    methods: {
+        firstPage: function () {
+            this.currentPage = 1;
+            search.changePage();
+        },
+        nextPage: function () {
+            if (app.cars.length == 0) {
+                alert('已無資料!');
+            }
+            else {
+                this.currentPage += 1;
+                search.changePage();
+            }
+        },
+        previousPage: function () {
+            this.currentPage -= 1;
+            if (this.currentPage < 1) {
+                this.currentPage = 1;
+            }
+            search.changePage();
+        }
+    }
+});
+</code></pre>
         </section>
       </div>
     </div>
