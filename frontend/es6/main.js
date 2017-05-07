@@ -80,7 +80,7 @@ var app = new Vue({
         isEmpty: false,
     },
     beforeMount: function () {
-        this.initTable()
+        this.initTable();
     },
     methods:{
         initTable: function () {
@@ -90,7 +90,7 @@ var app = new Vue({
                     temp.cars = response.data;
                 })
                 .catch(function (error) {
-                    console.log(error)
+                    console.log(error);
                 });
         }
     }
