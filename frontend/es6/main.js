@@ -64,7 +64,6 @@ var search = new Vue({
         },
         sendNewSearch: function () {
             pageButton.currentPage = 1;
-            this.selected.page = pageButton.currentPage;
             this.changePage();
         },
         changePage: function () {

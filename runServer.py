@@ -9,11 +9,6 @@ USER = 'user'
 PASSWORD = 'password'
 DB = 'cars'
 
-HOST = '192.168.1.100'
-USER = 'mac'
-PASSWORD = 'x94jo6cl6'
-DB = 'cars'
-
 app = Flask(__name__, template_folder=FRONTEND_PATH,
             static_folder=FRONTEND_PATH)
 
