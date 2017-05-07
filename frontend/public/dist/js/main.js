@@ -59,6 +59,7 @@ var search = new Vue({
         },
         sendNewSearch: function sendNewSearch() {
             pageButton.currentPage = 1;
+            this.selected.page = pageButton.currentPage;
             this.changePage();
         },
         changePage: function changePage() {
@@ -100,8 +101,12 @@ var pageButton = new Vue({
             search.changePage();
         },
         nextPage: function nextPage() {
-            this.currentPage += 1;
-            search.changePage();
+            if (app.cars.length == 0) {
+                alert('已無資料!');
+            } else {
+                this.currentPage += 1;
+                search.changePage();
+            }
         },
         previousPage: function previousPage() {
             this.currentPage -= 1;
