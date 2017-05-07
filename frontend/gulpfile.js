@@ -17,18 +17,21 @@ gulp.task('default', function() {
     gulp.src("sass/**/*.sass")
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('dist/css'));
-    gulp.src("pug/**/*.pug")
+    gulp.src("pug/**/index.pug")
         .pipe(pug({ pretty: true }))
         .pipe(gulp.dest('dist'))
+    gulp.src("pug/**/docs.pug")
+        .pipe(pug({ pretty: true }))
+        .pipe(gulp.dest('../docs'))
     
-    // Browser source
-    gulp.src("es6/**/*.js")
-        .pipe(babel())
-        .pipe(gulp.dest("public/dist/js"));
-    gulp.src("es6/**/*.js")
-        .pipe(babel())
-        .pipe(gulp.dest("public/dist/js"));
-    gulp.src("pug/**/*.pug")
-        .pipe(pug())
-        .pipe(gulp.dest('public/dist'))
+    // // Browser source
+    // gulp.src("es6/**/*.js")
+    //     .pipe(babel())
+    //     .pipe(gulp.dest("public/dist/js"));
+    // gulp.src("es6/**/*.js")
+    //     .pipe(babel())
+    //     .pipe(gulp.dest("public/dist/js"));
+    // gulp.src("pug/**/*.pug")
+    //     .pipe(pug())
+    //     .pipe(gulp.dest('public/dist'))
 });
