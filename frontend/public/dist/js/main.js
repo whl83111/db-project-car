@@ -2,6 +2,22 @@
 
 Vue.options.delimiters = ['<%', '%>'];
 
+var searchInit = {
+    brand: null,
+    shift: null,
+    year: null,
+    region: null,
+    price: {
+        min: null,
+        max: null
+    },
+    displacement: {
+        min: null,
+        max: null
+    },
+    page: 1
+};
+
 var search = new Vue({
     el: '#search',
     data: {
@@ -9,20 +25,7 @@ var search = new Vue({
         shifts: [],
         years: [],
         regions: [],
-        selected: {
-            brand: null,
-            shift: null,
-            year: null,
-            region: null,
-            price: {
-                min: null,
-                max: null
-            },
-            displacement: {
-                min: null,
-                max: null
-            }
-        }
+        selected: searchInit
     },
     beforeMount: function beforeMount() {
         this.distinct('brands');
@@ -54,8 +57,13 @@ var search = new Vue({
                 console.log(error);
             });
         },
-        clickTest: function clickTest() {
-            console.log('Clicked.');
+        sendNewSearch: function sendNewSearch() {
+            pageButton.currentPage = 1;
+            this.changePage();
+        },
+        changePage: function changePage() {
+            this.selected.page = pageButton.currentPage;
+            this.sendSearch();
         }
     }
 });
@@ -77,6 +85,30 @@ var app = new Vue({
             }).catch(function (error) {
                 console.log(error);
             });
+        }
+    }
+});
+
+var pageButton = new Vue({
+    el: '#pageButton',
+    data: {
+        currentPage: 1
+    },
+    methods: {
+        firstPage: function firstPage() {
+            this.currentPage = 1;
+            search.changePage();
+        },
+        nextPage: function nextPage() {
+            this.currentPage += 1;
+            search.changePage();
+        },
+        previousPage: function previousPage() {
+            this.currentPage -= 1;
+            if (this.currentPage < 1) {
+                this.currentPage = 1;
+            }
+            search.changePage();
         }
     }
 });

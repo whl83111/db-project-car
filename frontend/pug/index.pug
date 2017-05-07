@@ -60,7 +60,7 @@ html
                             input#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.displacement.max')
                             | c.c.
 
-                button.btn.btn-primary(type='submit', @click="sendSearch") 搜尋
+                button.btn.btn-primary(type='submit', @click="sendNewSearch") 搜尋
             #app
                 table.table.table-striped.table-hover.table-bordered
                     thead.thead-inverse
@@ -87,18 +87,14 @@ html
                 .alert.alert-info(role='alert', v-if="isEmpty")
                     |  查無資料!
 
-            
-            nav(aria-label="Page navigation example")
+            nav(aria-label="Page navigation example")#pageButton
+                .d-flex.justify-content-center 第 <% currentPage %> 頁
                 ul.pagination.justify-content-center
-                    li.page-item.disabled
-                        a.page-link(href="#" tabindex="-1") Previous
                     li.page-item
-                        a.page-link(href="#") 1
+                        a.page-link(href="#", tabindex="-1", @click="firstPage") 第一頁
                     li.page-item
-                        a.page-link(href="#") 2
-                    li.page-item
-                        a.page-link(href="#") 3
+                        a.page-link(href="#", @click="previousPage") 上一頁
                     li.page-item 
-                        a.page-link(href="#") Next
-        
+                        a.page-link(href="#", @click="nextPage") 下一頁
+                
         script(src="{{ url_for('static', filename='js/main.js') }}")

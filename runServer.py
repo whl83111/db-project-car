@@ -9,6 +9,11 @@ USER = 'user'
 PASSWORD = 'password'
 DB = 'cars'
 
+HOST = '192.168.1.100'
+USER = 'mac'
+PASSWORD = 'x94jo6cl6'
+DB = 'cars'
+
 app = Flask(__name__, template_folder=FRONTEND_PATH,
             static_folder=FRONTEND_PATH)
 
@@ -45,7 +50,7 @@ def select():
                 'type': 'SELECT',
                 'targetColumns': '*',
                 'targetTable': 'data',
-                'addition': '{} ORDER BY `updateTime` LIMIT 0, 10'
+                'addition': '{} ORDER BY `updateTime` LIMIT {}, 10'
             }
             additions = list()
             if (request.json['brand']):
@@ -73,9 +78,10 @@ def select():
                 additions.append(
                     '`displacement` <= "{}"'.format(request.json['displacement']['max']))
             if additions != list():
-                sqlDict['addition'] = sqlDict['addition'].format("WHERE ({})".format(' AND '.join(additions)))
+                sqlDict['addition'] = sqlDict['addition'].format("WHERE ({})".format(
+                    ' AND '.join(additions)), (request.json['page'] - 1) * 10)
             else:
-                sqlDict['addition'] = sqlDict['addition'].format('')
+                sqlDict['addition'] = sqlDict['addition'].format('', (request.json['page'] - 1) * 10)
             # print('\n\n', sqlDict['addition'], '\n\n')
             mysql.executeSQL(sqlDict)
         return jsonify(mysql.executeResult)
@@ -93,6 +99,24 @@ def distinct():
         mysql.executeSQL({
             'type': 'SELECT DISTINCT',
             'targetColumn': request.json['targetColumn'],
+            'targetTable': 'data',
+            'addition': ''
+        })
+        return jsonify(mysql.executeResult)
+
+@app.route("/api/countPage", methods=['GET', 'POST'])
+def countPage():
+    # TODO: 修改之
+    if request.method == 'GET':
+        return 'countPage'
+    elif request.method == 'POST':
+        mysql = MySQL(host=HOST,
+                      user=USER,
+                      password=PASSWORD,
+                      db=DB
+                      )
+        mysql.executeSQL({
+            'type': 'SELECT COUNT(*)',
             'targetTable': 'data',
             'addition': ''
         })
