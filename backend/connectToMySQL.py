@@ -8,26 +8,17 @@ class connectToMySQL():
         self.user = user
         self.password = password
         self.db = db
-        self.connection = pymysql.connect(host=self.host,
-                                          user=self.user,
-                                          password=self.password,
-                                          db=self.db,
-                                          charset='utf8mb4',
-                                          cursorclass=pymysql.cursors.DictCursor)
-        self.executeResult = list()
-
-    def connectMySQL(self):
         try:
             self.connection = pymysql.connect(host=self.host,
-                                              user=self.user,
-                                              password=self.password,
-                                              db=self.db,
-                                              charset='utf8mb4',
-                                              cursorclass=pymysql.cursors.DictCursor)
+                                            user=self.user,
+                                            password=self.password,
+                                            db=self.db,
+                                            charset='utf8mb4',
+                                            cursorclass=pymysql.cursors.DictCursor)
         except:
             print('Error from ConnectMySQL !')
             print(sys.exc_info())
-
+        self.executeResult = list()
     def executeSQL(self, sqlDict):
         # try:
             if sqlDict['type'] == "INSERT INTO":
@@ -79,3 +70,22 @@ class connectToMySQL():
         # except:
             # print(sys.exc_info())
             # print('Error from executeSQL!')
+    def insert(self):
+        sql = "INSERT INTO `{targetTable}` {targetCloumns_tuple} VALUES {insertValues} {additions}"
+        pass
+
+    def select(self):
+        sql = "SELECT {targetColumns} FROM {targetTable} {addition}"
+        pass
+    
+    def update(self):
+        pass
+
+    def delete(self):
+        pass
+
+    def where(self, *args):
+        pass
+
+    def limit(self, start, each):
+        return 'LIMIT {}, {}'.format(start, each)

@@ -3,19 +3,26 @@
 Vue.options.delimiters = ['<%', '%>'];
 
 var searchInit = {
-    brand: null,
-    shift: null,
-    year: null,
-    region: null,
-    price: {
-        min: null,
-        max: null
+    conditions: {
+        brand: null,
+        shift: null,
+        yearMin: null,
+        yearMax: null,
+        region: null,
+        priceMin: null,
+        priceMax: null,
+        displacementMin: null,
+        displacementMax: null
     },
-    displacement: {
-        min: null,
-        max: null
+    page: 1,
+    orderBy: {
+        price: null,
+        years: null
     },
-    page: 1
+    limit: {
+        start: 0,
+        each: 10
+    }
 };
 
 var search = new Vue({
@@ -30,7 +37,6 @@ var search = new Vue({
     beforeMount: function beforeMount() {
         this.distinct('brands');
         this.distinct('shifts');
-        this.distinct('years');
         this.distinct('regions');
     },
     beforeUpdate: function beforeUpdate() {},
@@ -72,7 +78,9 @@ var app = new Vue({
     el: '#app',
     data: {
         cars: [],
-        isEmpty: false
+        isEmpty: false,
+        priceOrder: null,
+        yearsOrder: null
     },
     beforeMount: function beforeMount() {
         this.initTable();
@@ -85,6 +93,32 @@ var app = new Vue({
             }).catch(function (error) {
                 console.log(error);
             });
+        },
+        changePriceOrder: function changePriceOrder() {
+            if (search.selected.orderBy.price == 'ASCE') {
+                this.priceOrder = '▼';
+                search.selected.orderBy.price = 'DESC';
+            } else {
+                this.priceOrder = '▲';
+                search.selected.orderBy.price = 'ASCE';
+            }
+            search.sendNewSearch();
+        },
+        changeYearsOrder: function changeYearsOrder() {
+            if (search.selected.orderBy.price == 'ASCE') {
+                this.yearsOrder = '▼';
+                search.selected.orderBy.price = 'DESC';
+            } else {
+                this.yearsOrder = '▲';
+                search.selected.orderBy.price = 'ASCE';
+            }
+            search.sendNewSearch();
+        },
+        addNewObject: function addNewObject() {
+            console.log('INSERT');
+        },
+        deleteObject: function deleteObject(car) {
+            console.log(car);
         }
     }
 });

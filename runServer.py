@@ -5,8 +5,8 @@ import os
 FRONTEND_PATH = os.path.join('frontend', 'dist')
 
 HOST = 'localhost'
-USER = 'user'
-PASSWORD = 'password'
+USER = 'root'
+PASSWORD = 'x94jo6cl6'
 DB = 'cars'
 
 app = Flask(__name__, template_folder=FRONTEND_PATH,
@@ -38,41 +38,56 @@ def select():
                 'type': 'SELECT',
                 'targetColumns': '*',
                 'targetTable': 'data',
-                'addition': 'ORDER BY `updateTime` LIMIT 0, 10'
+                'where': None,
+                'orderBy': {
+                    'price': None,
+                    'years': None
+                },
+                'limit': {
+                    'start': 0,
+                    'each': 10
+                }
             })
         else:
             sqlDict = {
                 'type': 'SELECT',
                 'targetColumns': '*',
                 'targetTable': 'data',
-                'addition': '{} ORDER BY `updateTime` LIMIT {}, 10'
+                'where': list(),
+                'orderBy': request.json['orderBy'],
+                'limit': request.json['limit']
+                'addition': 'WHERE {} ORDER BY {}`updateTime` LIMIT {}, {}',
             }
             additions = list()
-            if (request.json['brand']):
-                additions.append(
-                    '`brands` = "{}"'.format(request.json['brand']))
-            if (request.json['shift']):
-                additions.append(
-                    '`shifts` = "{}"'.format(request.json['shift']))
-            if (request.json['year']):
-                additions.append(
-                    '`years` >= "{}"'.format(request.json['year']))
-            if (request.json['region']):
-                additions.append(
-                    '`regions` = "{}"'.format(request.json['region']))
-            if (request.json['price']['min']):
-                additions.append(
-                    '`price` >= "{}"'.format(request.json['price']['min']))
-            if (request.json['price']['max']):
-                additions.append(
-                    '`price` <= "{}"'.format(request.json['price']['max']))
-            if (request.json['displacement']['min']):
-                additions.append(
-                    '`displacement` >= "{}"'.format(request.json['displacement']['min']))
-            if (request.json['displacement']['max']):
-                additions.append(
-                    '`displacement` <= "{}"'.format(request.json['displacement']['max']))
-            if additions != list():
+            conditions = request.json['conditions']
+            if (conditions['brand']):
+                sqlDict['where'].append(
+                    '`brands` = "{}"'.format(conditions['brand']))
+            if (conditions['shift']):
+                sqlDict['where'].append(
+                    '`shifts` = "{}"'.format(conditions['shift']))
+            if (conditions['yearMin']):
+                sqlDict['where'].append(
+                    '`years` >= "{}"'.format(conditions['yearMin']))
+            if (conditions['yearMax']):
+                sqlDict['where'].append(
+                    '`years` >= "{}"'.format(conditions['yearMax']))
+            if (conditions['region']):
+                sqlDict['where'].append(
+                    '`regions` = "{}"'.format(conditions['region']))
+            if (conditions['price']['min']):
+                sqlDict['where'].append(
+                    '`price` >= "{}"'.format(conditions['price']['min']))
+            if (conditions['price']['max']):
+                sqlDict['where'].append(
+                    '`price` <= "{}"'.format(conditions['price']['max']))
+            if (conditions['displacementMin']):
+                sqlDict['where'].append(
+                    '`displacement` >= "{}"'.format(conditions['displacementMin']))
+            if (conditions['displacementMax']):
+                sqlDict['where'].append(
+                    '`displacement` <= "{}"'.format(conditions['displacementMax']))
+            if sqlDict['where'] != list():
                 sqlDict['addition'] = sqlDict['addition'].format("WHERE ({})".format(
                     ' AND '.join(additions)), (request.json['page'] - 1) * 10)
             else:

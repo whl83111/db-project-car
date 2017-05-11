@@ -24,14 +24,14 @@
           <div class="row">
             <div class="col form-group">
               <label for="select-brand">廠牌</label>
-              <select class="form-control" id="select-brand" v-model="selected.brand">
+              <select class="form-control" id="select-brand" v-model="selected.conditions.brand">
                 <option></option>
                 <option v-for="brand in brands"><% brand %></option>
               </select>
             </div>
             <div class="col form-group">
               <label for="select-shift">排檔方式</label>
-              <select class="form-control" id="select-shift" v-model="selected.shift">
+              <select class="form-control" id="select-shift" v-model="selected.conditions.shift">
                 <option></option>
                 <option v-for="shift in shifts"><% shift %></option>
               </select>
@@ -39,15 +39,13 @@
           </div>
           <div class="row">
             <div class="col form-group">
-              <label for="year">年份</label>
-              <select class="form-control" id="year" v-model="selected.year">
-                <option></option>
-                <option v-for="year in years"><% year %></option>
-              </select>
+              <label for="year">年份(西元)</label><br>
+              <input id="min-price" type="number" name="min-price" min="1995" v-model="selected.conditions.yearMin">年 ~ 
+              <input id="max-price" type="number" name="max-price" min="1995" v-model="selected.conditions.yearMax">年
             </div>
             <div class="col form-group">
               <label for="select-region">地區</label>
-              <select class="form-control" id="select-region" v-model="selected.region">
+              <select class="form-control" id="select-region" v-model="selected.conditions.region">
                 <option></option>
                 <option v-for="region in regions"><% region %></option>
               </select>
@@ -56,42 +54,80 @@
           <div class="row">
             <div class="col form-group">
               <label>價格</label><br>
-              <input id="min-price" type="number" name="min-price" min="0" v-model="selected.price.min">萬 ~ 
-              <input id="max-price" type="number" name="max-price" min="0" v-model="selected.price.max">萬
+              <input id="min-price" type="number" name="min-price" min="0" v-model="selected.conditions.priceMin">萬 ~ 
+              <input id="max-price" type="number" name="max-price" min="0" v-model="selected.conditions.priceMax">萬
             </div>
             <div class="col form-group">
               <label>排氣量</label><br>
-              <input id="min-displacement" type="number" name="min-displacement" min="0" v-model="selected.displacement.min">c.c. ~ 
-              <input id="max-displacement" type="number" name="max-displacement" min="0" v-model="selected.displacement.max">c.c.
+              <input id="min-displacement" type="number" name="min-displacement" min="0" v-model="selected.conditions.displacementMin">c.c. ~ 
+              <input id="max-displacement" type="number" name="max-displacement" min="0" v-model="selected.conditions.displacementMax">c.c.
             </div>
           </div>
         </div>
         <button class="btn btn-primary" type="submit" @click="sendNewSearch">搜尋</button>
       </div>
       <div id="app">
+        <div class="card">
+          <div class="card-block">
+            <div class="clearfix">
+              <div class="float-left align-middle">
+                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#myModal" @click="addNewObject">新增物件</button>
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content"></div>
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> 
+                      <button class="close" type="button" data-dismiss="modal" aria-label="Close"></button><span aria-hidden="true">&times;</span>
+                    </div>
+                    <div class="modal-body"> ...</div>
+                    <div class="modal-footer">
+                      <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button> 
+                      <button class="btn btn-primary" type="button">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="float-right col-4 form-group row">
+                <label class="col-form-label col-6">每頁物件筆數  </label>
+                <div class="col-4">
+                  <select class="form-control" id="select-region" v-model="selected.limit.each">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>25</option>
+                    <option>50</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <table class="table table-striped table-hover table-bordered">
           <thead class="thead-inverse">
             <tr>
-              <th>圖片</th>
+              <th width="144">圖片</th>
               <th>廠牌</th>
               <th>車型</th>
               <th>排檔</th>
-              <th>價格</th>
-              <th>年份</th>
+              <th @click="changePriceOrder">價格 <% priceOrder %></th>
+              <th @click="changeYearsOrder">年份 <% yearsOrder %></th>
               <th>排氣量</th>
               <th>地區</th>
+              <th>刪除</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="car in cars">
-              <td><img :src="car.imgLink"></td>
-              <td><% car.brands %></td>
-              <td><% car.carModel %></td>
-              <td><% car.shifts %></td>
-              <td><% car.price %></td>
-              <td><% car.years %></td>
-              <td><% car.displacement %></td>
-              <td><% car.regions %></td>
+              <td><img :src="car.imgLink" height="81" width="144"></td>
+              <td class="align-middle"><% car.brands %></td>
+              <td class="align-middle"><% car.carModel %></td>
+              <td class="align-middle"><% car.shifts %></td>
+              <td class="align-middle"><% car.price %></td>
+              <td class="align-middle"><% car.years %></td>
+              <td class="align-middle"><% car.displacement %></td>
+              <td class="align-middle"><% car.regions %></td>
+              <td class="align-middle">
+                <button class="btn btn-outline-danger" type="button" @click="deleteObject(car)">刪除</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -100,9 +136,9 @@
       <nav aria-label="Page navigation example" id="pageButton">
         <div class="d-flex justify-content-center">第 <% currentPage %> 頁</div>
         <ul class="pagination justify-content-center">
-          <li class="page-item"><a class="page-link" href="#" tabindex="-1" @click="firstPage">第一頁</a></li>
-          <li class="page-item"><a class="page-link" href="#" @click="previousPage">上一頁</a></li>
-          <li class="page-item"> <a class="page-link" href="#" @click="nextPage">下一頁</a></li>
+          <li class="page-item"><a class="page-link" tabindex="-1" @click="firstPage">第一頁</a></li>
+          <li class="page-item"><a class="page-link" @click="previousPage">上一頁</a></li>
+          <li class="page-item"> <a class="page-link" @click="nextPage">下一頁</a></li>
         </ul>
       </nav>
     </div>

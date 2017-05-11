@@ -25,65 +25,96 @@ html
                     .row
                         .col.form-group
                             label(for='select-brand') 廠牌
-                            select#select-brand.form-control(v-model="selected.brand")
+                            select#select-brand.form-control(v-model="selected.conditions.brand")
                                 option
                                 option(v-for='brand in brands') <% brand %>
                         .col.form-group
                             label(for='select-shift') 排檔方式
-                            select#select-shift.form-control(v-model="selected.shift")
+                            select#select-shift.form-control(v-model="selected.conditions.shift")
                                 option
                                 option(v-for='shift in shifts') <% shift %>
                     .row
                         .col.form-group
-                            label(for='year') 年份
-                            select#year.form-control(v-model="selected.year")
-                                option
-                                option(v-for='year in years') <% year %>
+                            label(for='year') 年份(西元)
+                            br
+                            input#min-price(type='number', name='min-price', min='1995', v-model='selected.conditions.yearMin')
+                            | 年 ~ 
+                            input#max-price(type='number', name='max-price', min='1995', v-model='selected.conditions.yearMax')
+                            | 年
                         .col.form-group
                             label(for='select-region') 地區
-                            select#select-region.form-control(v-model="selected.region")
+                            select#select-region.form-control(v-model="selected.conditions.region")
                                 option
                                 option(v-for='region in regions') <% region %>
                     .row
                         .col.form-group
                             label 價格
                             br
-                            input#min-price(type='number', name='min-price', min='0', v-model='selected.price.min')
+                            input#min-price(type='number', name='min-price', min='0', v-model='selected.conditions.priceMin')
                             | 萬 ~ 
-                            input#max-price(type='number', name='max-price', min='0', v-model='selected.price.max')
+                            input#max-price(type='number', name='max-price', min='0', v-model='selected.conditions.priceMax')
                             | 萬
                         .col.form-group
                             label 排氣量
                             br
-                            input#min-displacement(type='number', name='min-displacement', min='0', v-model='selected.displacement.min')
+                            input#min-displacement(type='number', name='min-displacement', min='0', v-model='selected.conditions.displacementMin')
                             | c.c. ~ 
-                            input#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.displacement.max')
+                            input#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.conditions.displacementMax')
                             | c.c.
 
                 button.btn.btn-primary(type='submit', @click="sendNewSearch") 搜尋
             #app
+                .card
+                    .card-block
+                        .clearfix
+                            .float-left.align-middle
+                                button.btn.btn-primary(type='button', data-toggle='modal', data-target='#myModal', @click="addNewObject") 新增物件
+                                #myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+                                    .modal-dialog(role='document')
+                                        .modal-content
+                                        .modal-header
+                                            h5#exampleModalLabel.modal-title Modal title
+                                            |  
+                                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                            span(aria-hidden='true') &times;
+                                        .modal-body  ...
+                                        .modal-footer
+                                            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                                            |  
+                                            button.btn.btn-primary(type='button') Save changes
+                            .float-right.col-4.form-group.row
+                                label.col-form-label.col-6 每頁物件筆數  
+                                .col-4
+                                    select#select-region.form-control(v-model="selected.limit.each")
+                                        option 10
+                                        option 20
+                                        option 25
+                                        option 50
                 table.table.table-striped.table-hover.table-bordered
                     thead.thead-inverse
                         tr
-                            th 圖片
+                            th(width="144") 圖片
                             th 廠牌
                             th 車型
                             th 排檔
-                            th 價格
-                            th 年份
+                            th(@click="changePriceOrder") 價格 <% priceOrder %>
+                            th(@click="changeYearsOrder") 年份 <% yearsOrder %>
                             th 排氣量
                             th 地區
+                            th 刪除
                     tbody
                         tr(v-for="car in cars")
                             td
-                                img(:src="car.imgLink")
-                            td <% car.brands %>
-                            td <% car.carModel %>
-                            td <% car.shifts %>
-                            td <% car.price %>
-                            td <% car.years %>
-                            td <% car.displacement %>
-                            td <% car.regions %>
+                                img(:src="car.imgLink", height="81", width="144")
+                            td.align-middle <% car.brands %>
+                            td.align-middle <% car.carModel %>
+                            td.align-middle <% car.shifts %>
+                            td.align-middle <% car.price %>
+                            td.align-middle <% car.years %>
+                            td.align-middle <% car.displacement %>
+                            td.align-middle <% car.regions %>
+                            td.align-middle
+                                button.btn.btn-outline-danger(type="button", @click="deleteObject(car)") 刪除
                 .alert.alert-info(role='alert', v-if="isEmpty")
                     |  查無資料!
 
@@ -91,10 +122,10 @@ html
                 .d-flex.justify-content-center 第 <% currentPage %> 頁
                 ul.pagination.justify-content-center
                     li.page-item
-                        a.page-link(href="#", tabindex="-1", @click="firstPage") 第一頁
+                        a.page-link(tabindex="-1", @click="firstPage") 第一頁
                     li.page-item
-                        a.page-link(href="#", @click="previousPage") 上一頁
+                        a.page-link(@click="previousPage") 上一頁
                     li.page-item 
-                        a.page-link(href="#", @click="nextPage") 下一頁
+                        a.page-link(@click="nextPage") 下一頁
                 
         script(src="{{ url_for('static', filename='js/main.js') }}")
