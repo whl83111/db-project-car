@@ -4,6 +4,8 @@
     <title>隨便買好車網</title>
     <meta charset="utf8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -19,7 +21,10 @@
     </div>
     <div class="container-fluid">
       <div class="card" id="search">
-        <div class="card-header">條件搜尋</div>
+        <div class="card-header clearfix">
+          <h3 class="float-left" style="position: relative;top: 5px;">條件搜尋</h3>
+          <button class="float-right btn btn-secondary" @click="clearSearch">清除條件</button>
+        </div>
         <div class="card-block">
           <div class="row">
             <div class="col form-group">
@@ -39,9 +44,11 @@
           </div>
           <div class="row">
             <div class="col form-group">
-              <label for="year">年份(西元)</label><br>
-              <input id="min-price" type="number" name="min-price" min="1995" v-model="selected.conditions.yearMin">年 ~ 
-              <input id="max-price" type="number" name="max-price" min="1995" v-model="selected.conditions.yearMax">年
+              <label for="year">年份(西元)</label>
+              <div class="form-inline">
+                <input class="form-control w-25 mr-sm-2" id="min-price" type="number" name="min-price" min="1995" v-model="selected.conditions.yearMin">年 ~
+                <input class="form-control w-25 mx-sm-2" id="max-price" type="number" name="max-price" min="1995" v-model="selected.conditions.yearMax">年
+              </div>
             </div>
             <div class="col form-group">
               <label for="select-region">地區</label>
@@ -53,94 +60,152 @@
           </div>
           <div class="row">
             <div class="col form-group">
-              <label>價格</label><br>
-              <input id="min-price" type="number" name="min-price" min="0" v-model="selected.conditions.priceMin">萬 ~ 
-              <input id="max-price" type="number" name="max-price" min="0" v-model="selected.conditions.priceMax">萬
+              <label>價格</label>
+              <div class="form-inline">
+                <input class="form-control w-25 mr-sm-2" id="min-price" type="number" name="min-price" min="0" v-model="selected.conditions.priceMin">萬 ~ 
+                <input class="form-control w-25 mx-sm-2" id="max-price" type="number" name="max-price" min="0" v-model="selected.conditions.priceMax">萬
+              </div>
             </div>
             <div class="col form-group">
-              <label>排氣量</label><br>
-              <input id="min-displacement" type="number" name="min-displacement" min="0" v-model="selected.conditions.displacementMin">c.c. ~ 
-              <input id="max-displacement" type="number" name="max-displacement" min="0" v-model="selected.conditions.displacementMax">c.c.
+              <label>排氣量</label>
+              <div class="form-inline">
+                <input class="form-control w-25 mr-sm-2" id="min-displacement" type="number" name="min-displacement" min="0" v-model="selected.conditions.displacementMin">c.c. ~ 
+                <input class="form-control w-25 mx-sm-2" id="max-displacement" type="number" name="max-displacement" min="0" v-model="selected.conditions.displacementMax">c.c.
+              </div>
             </div>
           </div>
         </div>
         <button class="btn btn-primary" type="submit" @click="sendNewSearch">搜尋</button>
       </div>
-      <div id="app">
+      <div class="my-sm-2" id="app">
         <div class="card">
-          <div class="card-block">
-            <div class="clearfix">
-              <div class="float-left align-middle">
-                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#myModal" @click="addNewObject">新增物件</button>
-                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content"></div>
+          <div class="card-header clearfix">
+            <div class="float-left">
+              <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#newObject">新增物件</button>
+              <div class="modal fade" id="newObject" tabindex="-1" role="dialog" aria-labelledby="newObjectModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> 
-                      <button class="close" type="button" data-dismiss="modal" aria-label="Close"></button><span aria-hidden="true">&times;</span>
+                      <h5 class="modal-title" id="newObjectModalLabel">新增物件</h5>
+                      <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
-                    <div class="modal-body"> ...</div>
+                    <div class="modal-body">
+                      <form id="new" action="api/insert" method="post">
+                        <div class="form-group">
+                          <label>圖片網址</label>
+                          <input class="form-control" type="text" placeholder="請輸入圖片網址" name="imgLink">
+                        </div>
+                        <div class="form-group">
+                          <label>廠牌</label>
+                          <input class="form-control" type="text" placeholder="請輸入廠牌" name="brand">
+                        </div>
+                        <div class="form-group">
+                          <label>車型</label>
+                          <input class="form-control" type="text" placeholder="請輸入車型" name="carModel">
+                        </div>
+                        <div class="form-group">
+                          <label>排檔方式</label>
+                          <input class="form-control" type="text" placeholder="請輸入排檔方式" name="shift">
+                        </div>
+                        <div class="form-group">
+                          <label>價格</label>
+                          <input class="form-control" type="text" placeholder="請輸入價格" name="price">
+                        </div>
+                        <div class="form-group">
+                          <label>年份</label>
+                          <input class="form-control" type="text" placeholder="請輸入年份" name="year">
+                        </div>
+                        <div class="form-group">
+                          <label>排氣量</label>
+                          <input class="form-control" type="text" placeholder="請輸入排氣量" name="displacement">
+                        </div>
+                        <div class="form-group">
+                          <label>地區</label>
+                          <input class="form-control" type="text" placeholder="請輸入地區" name="region">
+                        </div>
+                      </form>
+                    </div>
                     <div class="modal-footer">
-                      <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button> 
-                      <button class="btn btn-primary" type="button">Save changes</button>
+                      <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+                      <button class="btn btn-primary" type="submit" data-dismiss="modal" form="new">確定</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="float-right col-4 form-group row">
-                <label class="col-form-label col-6">每頁物件筆數  </label>
-                <div class="col-4">
-                  <select class="form-control" id="select-region" v-model="selected.limit.each">
-                    <option>10</option>
-                    <option>20</option>
-                    <option>25</option>
-                    <option>50</option>
-                  </select>
+            </div>
+            <div class="float-right">
+              <form class="form-inline">
+                <div class="form-group">
+                  <p class="form-control-static">每頁筆數</p>
                 </div>
-              </div>
+                <div class="form-group mx-sm-3">
+                  <input class="form-control" type="number" min="0" v-model.number="dataAmountPerPage">
+                </div>
+              </form>
             </div>
           </div>
+          <div class="card-block">
+            <table class="table table-striped table-hover table-bordered">
+              <thead class="thead-inverse">
+                <tr>
+                  <th width="144">圖片</th>
+                  <th @click="changeOrder('brand')">廠牌 <% orderSign.brand %></th>
+                  <th @click="changeOrder('carModel')">車型 <% orderSign.carModel %></th>
+                  <th @click="changeOrder('shift')">排檔 <% orderSign.shift %></th>
+                  <th @click="changeOrder('price')">價格 <% orderSign.price %></th>
+                  <th @click="changeOrder('year')">年份 <% orderSign.year %></th>
+                  <th @click="changeOrder('displacement')">排氣量 <% orderSign.displacement %></th>
+                  <th @click="changeOrder('region')">地區 <% orderSign.region %></th>
+                  <th>編輯</th>
+                  <th>刪除</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="car in cars">
+                  <td><img :src="car.imgLink" height="81" width="144"></td>
+                  <td class="align-middle"><% car.brand %></td>
+                  <td class="align-middle"><% car.carModel %></td>
+                  <td class="align-middle"><% car.shift %></td>
+                  <td class="align-middle"><% car.price %></td>
+                  <td class="align-middle"><% car.year %></td>
+                  <td class="align-middle"><% car.displacement %></td>
+                  <td class="align-middle"><% car.region %></td>
+                  <td class="align-middle">
+                    <new-object></new-object>
+                  </td>
+                  <td class="align-middle">
+                    <button class="btn btn-outline-danger" type="button" data-toggle="modal" data-target="#deleteObject">刪除</button>
+                    <div class="modal fade" id="deleteObject" tabindex="-1" role="dialog" aria-labelledby="deleteObjectLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteObjectLabel">刪除物件</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          </div>
+                          <div class="modal-body">確定刪除?</div>
+                          <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+                            <button class="btn btn-primary" type="button" data-dismiss="modal" @click="deleteObject(car.id)">確定</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="alert alert-info" role="alert" v-if="isEmpty"> 查無資料!</div>
+            <nav aria-label="Page navigation example" id="pageButton">
+              <div class="d-flex justify-content-center">第 <% currentPage %> 頁</div>
+              <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" tabindex="-1" @click="firstPage">第一頁</a></li>
+                <li class="page-item"><a class="page-link" @click="previousPage">上一頁</a></li>
+                <li class="page-item"> <a class="page-link" @click="nextPage">下一頁</a></li>
+              </ul>
+            </nav>
+          </div>
         </div>
-        <table class="table table-striped table-hover table-bordered">
-          <thead class="thead-inverse">
-            <tr>
-              <th width="144">圖片</th>
-              <th>廠牌</th>
-              <th>車型</th>
-              <th>排檔</th>
-              <th @click="changePriceOrder">價格 <% priceOrder %></th>
-              <th @click="changeYearsOrder">年份 <% yearsOrder %></th>
-              <th>排氣量</th>
-              <th>地區</th>
-              <th>刪除</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="car in cars">
-              <td><img :src="car.imgLink" height="81" width="144"></td>
-              <td class="align-middle"><% car.brands %></td>
-              <td class="align-middle"><% car.carModel %></td>
-              <td class="align-middle"><% car.shifts %></td>
-              <td class="align-middle"><% car.price %></td>
-              <td class="align-middle"><% car.years %></td>
-              <td class="align-middle"><% car.displacement %></td>
-              <td class="align-middle"><% car.regions %></td>
-              <td class="align-middle">
-                <button class="btn btn-outline-danger" type="button" @click="deleteObject(car)">刪除</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="alert alert-info" role="alert" v-if="isEmpty"> 查無資料!</div>
       </div>
-      <nav aria-label="Page navigation example" id="pageButton">
-        <div class="d-flex justify-content-center">第 <% currentPage %> 頁</div>
-        <ul class="pagination justify-content-center">
-          <li class="page-item"><a class="page-link" tabindex="-1" @click="firstPage">第一頁</a></li>
-          <li class="page-item"><a class="page-link" @click="previousPage">上一頁</a></li>
-          <li class="page-item"> <a class="page-link" @click="nextPage">下一頁</a></li>
-        </ul>
-      </nav>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
