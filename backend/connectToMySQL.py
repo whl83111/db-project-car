@@ -27,9 +27,9 @@ class SQL():
         return sql.strip()
 
     def insert(self, columns, values):
-        template = 'INSERT INTO `{}` ({}) VALUES ({})'
+        template = 'INSERT INTO {} ({}) VALUES ({})'
         sql = template.format(
-            self.targetTable, ','.join(columns), ','.join(values))
+            self.targetTable, ','.join(columns), ','.join(['"{}"'.format(value) for value in values]))
         print()
         print(sql)
         return sql.strip()
@@ -37,7 +37,7 @@ class SQL():
     def update(self, newValueWithColumns, objectId):
         # TODO: 考慮把`id`換成一般where()
         newData = ','.join([self.equal(column, value) for column, value in newValueWithColumns if column != 'id'])
-        template = 'UPDATE `cars`.`{}` SET {} WHERE `id`= {}'
+        template = 'UPDATE `{}` SET {} WHERE `id`= {}'
         sql = template.format(self.targetTable, newValueWithColumns, objectId)
         print()
         print(sql)
@@ -46,7 +46,7 @@ class SQL():
     def delete(self, objectId):
         # TODO: 考慮把`id`換成一般where()
         print(objectId)
-        template = 'DELETE FROM `cars`.{} WHERE `id`= {}'
+        template = 'DELETE FROM {} WHERE `id`= {}'
         sql = template.format(self.targetTable, objectId)
         print()
         print(sql)
@@ -111,11 +111,16 @@ class MySQL():
     def execute(self, sqlString):
         try:
             self.cursor.execute(sqlString)
-            self.executeResult = self.cursor.fetchall()
             # self.executeResult = list(filter(lambda x : x != '', sorted([list(result.values())[0] for result in cursor.fetchall()])))
         except:
             print(sys.exc_info())
-    
+
+    def getResponse(self):
+        try:
+            self.executeResult = self.cursor.fetchall()
+        except:
+            print(sys.exc_info())
+
     def commit(self):
         self.connection.commit()
 

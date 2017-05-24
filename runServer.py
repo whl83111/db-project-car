@@ -6,8 +6,8 @@ FRONTEND_PATH = os.path.join('frontend', 'dist')
 
 HOST = 'localhost'
 USER = 'root'
-PASSWORD = '0000'
-DB = 'g03'
+PASSWORD = 'x94jo6cl6'
+DB = 'cars'
 
 app = Flask(__name__, template_folder=FRONTEND_PATH,
             static_folder=FRONTEND_PATH)
@@ -18,7 +18,7 @@ app.config.update(
     SEND_FILE_MAX_AGE_DEFAULT=1,
 )
 
-sql = SQL('data')
+sql = SQL('`cars`.`data`')
 mysql = MySQL(host=HOST,
               user=USER,
               password=PASSWORD,
@@ -44,6 +44,7 @@ def select():
                                order=sql.order(request.json['orderBy']),
                                limit=sql.limit(request.json['limit']['start'], request.json['limit']['each']))
         mysql.execute(sqlString)
+        mysql.getResponse()
         # mysql.close()
         return jsonify(mysql.executeResult)
 
@@ -57,6 +58,7 @@ def distinct():
                        password=PASSWORD,
                        db=DB)
         mysql.execute(sql.distinct(request.json['targetColumn']))
+        mysql.getResponse()
         return jsonify([list(item.values())[0] for item in mysql.executeResult if list(item.values())[0] != ''])
 
 @app.route("/api/countPage", methods=['GET', 'POST'])
@@ -72,6 +74,7 @@ def countPage():
         mysql.execute(sql.count(where=sql.where(request.json['conditions']),
                                 order=sql.order(request.json['orderBy']),
                                 limit=sql.limit(request.json['limit']['start'], request.json['limit']['each'])))
+        mysql.getResponse()
         mysql.commit()
         mysql.close()
         return jsonify(mysql.executeResult)
