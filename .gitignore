@@ -1,4 +1,3 @@
 *.zip
 *.pyc
-*.sql
 node_modules/

@@ -4,6 +4,8 @@ html
         title 隨便買好車網
         meta(charset="utf8")
         link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css", integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ", crossorigin="anonymous")
+        script(src="https://code.jquery.com/jquery-3.1.1.slim.min.js", integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n", crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb", crossorigin="anonymous")
         script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js", integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn", crossorigin="anonymous")
         script(src="https://unpkg.com/vue/dist/vue.js")
         script(src="https://unpkg.com/axios/dist/axios.min.js")
@@ -20,81 +22,148 @@ html
         
         .container-fluid
             .card#search
-                .card-header 條件搜尋
+                .card-header.clearfix
+                    h3.float-left(style="position: relative;top: 5px;") 條件搜尋
+                    button.float-right.btn.btn-secondary(@click="clearSearch") 清除條件
                 .card-block
                     .row
                         .col.form-group
                             label(for='select-brand') 廠牌
-                            select#select-brand.form-control(v-model="selected.brand")
+                            select#select-brand.form-control(v-model="selected.conditions.brand")
                                 option
                                 option(v-for='brand in brands') <% brand %>
                         .col.form-group
                             label(for='select-shift') 排檔方式
-                            select#select-shift.form-control(v-model="selected.shift")
+                            select#select-shift.form-control(v-model="selected.conditions.shift")
                                 option
                                 option(v-for='shift in shifts') <% shift %>
                     .row
                         .col.form-group
-                            label(for='year') 年份
-                            select#year.form-control(v-model="selected.year")
-                                option
-                                option(v-for='year in years') <% year %>
+                            label(for='year') 年份(西元)
+                            .form-inline
+                                input.form-control.w-25.mr-sm-2#min-price(type='number', name='min-price', min='1995', v-model='selected.conditions.yearMin')
+                                | 年 ~
+                                input.form-control.w-25.mx-sm-2#max-price(type='number', name='max-price', min='1995', v-model='selected.conditions.yearMax')
+                                | 年
                         .col.form-group
                             label(for='select-region') 地區
-                            select#select-region.form-control(v-model="selected.region")
+                            select#select-region.form-control(v-model="selected.conditions.region")
                                 option
                                 option(v-for='region in regions') <% region %>
                     .row
                         .col.form-group
                             label 價格
-                            br
-                            input#min-price(type='number', name='min-price', min='0', v-model='selected.price.min')
-                            | 萬 ~ 
-                            input#max-price(type='number', name='max-price', min='0', v-model='selected.price.max')
-                            | 萬
+                            .form-inline
+                                input.form-control.w-25.mr-sm-2#min-price(type='number', name='min-price', min='0', v-model='selected.conditions.priceMin')
+                                | 萬 ~ 
+                                input.form-control.w-25.mx-sm-2#max-price(type='number', name='max-price', min='0', v-model='selected.conditions.priceMax')
+                                | 萬
                         .col.form-group
                             label 排氣量
-                            br
-                            input#min-displacement(type='number', name='min-displacement', min='0', v-model='selected.displacement.min')
-                            | c.c. ~ 
-                            input#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.displacement.max')
-                            | c.c.
-
+                            .form-inline
+                                input.form-control.w-25.mr-sm-2#min-displacement(type='number', name='min-displacement', min='0', v-model='selected.conditions.displacementMin')
+                                | c.c. ~ 
+                                input.form-control.w-25.mx-sm-2#max-displacement(type='number', name='max-displacement', min='0', v-model='selected.conditions.displacementMax')
+                                | c.c.
                 button.btn.btn-primary(type='submit', @click="sendNewSearch") 搜尋
-            #app
-                table.table.table-striped.table-hover.table-bordered
-                    thead.thead-inverse
-                        tr
-                            th 圖片
-                            th 廠牌
-                            th 車型
-                            th 排檔
-                            th 價格
-                            th 年份
-                            th 排氣量
-                            th 地區
-                    tbody
-                        tr(v-for="car in cars")
-                            td
-                                img(:src="car.imgLink")
-                            td <% car.brands %>
-                            td <% car.carModel %>
-                            td <% car.shifts %>
-                            td <% car.price %>
-                            td <% car.years %>
-                            td <% car.displacement %>
-                            td <% car.regions %>
-                .alert.alert-info(role='alert', v-if="isEmpty")
-                    |  查無資料!
+            #app.my-sm-2
+                .card
+                    .card-header.clearfix
+                        .float-left
+                            button.btn.btn-primary(type='button', data-toggle="modal" data-target="#newObject") 新增物件
+                            .modal.fade#newObject(tabindex="-1", role="dialog", aria-labelledby="newObjectModalLabel", aria-hidden="true")
+                                .modal-dialog(role="document")
+                                    .modal-content
+                                        .modal-header
+                                            h5.modal-title#newObjectModalLabel 新增物件
+                                            button.close(type="button", data-dismiss="modal", aria-label="Close")
+                                                span(aria-hidden="true") &times;
+                                        .modal-body
+                                            form#new(action="api/insert", method="post")
+                                                .form-group
+                                                    label 圖片網址
+                                                    input.form-control(type="text", placeholder="請輸入圖片網址", name="imgLink")
+                                                .form-group
+                                                    label 廠牌
+                                                    input.form-control(type="text", placeholder="請輸入廠牌", name="brand")
+                                                .form-group
+                                                    label 車型
+                                                    input.form-control(type="text", placeholder="請輸入車型", name="carModel")
+                                                .form-group
+                                                    label 排檔方式
+                                                    input.form-control(type="text", placeholder="請輸入排檔方式", name="shift")
+                                                .form-group
+                                                    label 價格
+                                                    input.form-control(type="text", placeholder="請輸入價格", name="price")
+                                                .form-group
+                                                    label 年份
+                                                    input.form-control(type="text", placeholder="請輸入年份", name="year")
+                                                .form-group
+                                                    label 排氣量
+                                                    input.form-control(type="text", placeholder="請輸入排氣量", name="displacement")
+                                                .form-group
+                                                    label 地區
+                                                    input.form-control(type="text", placeholder="請輸入地區", name="region")
+                                        .modal-footer
+                                            button.btn.btn-secondary(type="button", data-dismiss="modal") 取消
+                                            button.btn.btn-primary(type="submit", data-dismiss="modal", form="new") 確定
+                        .float-right
+                            form.form-inline
+                                .form-group
+                                    p.form-control-static 每頁筆數
+                                .form-group.mx-sm-3
+                                    input.form-control(type="number", min="0", v-model.number="dataAmountPerPage")
+                    .card-block
+                        table.table.table-striped.table-hover.table-bordered
+                            thead.thead-inverse
+                                tr
+                                    th(width="144") 圖片
+                                    th(@click="changeOrder('brand')") 廠牌 <% orderSign.brand %>
+                                    th(@click="changeOrder('carModel')") 車型 <% orderSign.carModel %>
+                                    th(@click="changeOrder('shift')") 排檔 <% orderSign.shift %>
+                                    th(@click="changeOrder('price')") 價格 <% orderSign.price %>
+                                    th(@click="changeOrder('year')") 年份 <% orderSign.year %>
+                                    th(@click="changeOrder('displacement')") 排氣量 <% orderSign.displacement %>
+                                    th(@click="changeOrder('region')") 地區 <% orderSign.region %>
+                                    th 編輯
+                                    th 刪除
+                            tbody
+                                tr(v-for="car in cars")
+                                    td
+                                        img(:src="car.imgLink", height="81", width="144")
+                                    td.align-middle <% car.brand %>
+                                    td.align-middle <% car.carModel %>
+                                    td.align-middle <% car.shift %>
+                                    td.align-middle <% car.price %>
+                                    td.align-middle <% car.year %>
+                                    td.align-middle <% car.displacement %>
+                                    td.align-middle <% car.region %>
+                                    td.align-middle
+                                        new-object
+                                    td.align-middle
+                                        button.btn.btn-outline-danger(type="button", data-toggle="modal", data-target="#deleteObject") 刪除
+                                        .modal.fade#deleteObject(tabindex="-1", role="dialog", aria-labelledby="deleteObjectLabel", aria-hidden="true")
+                                            .modal-dialog(role="document")
+                                                .modal-content
+                                                    .modal-header
+                                                        h5.modal-title#deleteObjectLabel 刪除物件
+                                                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                                                            span(aria-hidden="true") &times;
+                                                    .modal-body 確定刪除?
+                                                    .modal-footer
+                                                        button.btn.btn-secondary(type="button", data-dismiss="modal") 取消
+                                                        button.btn.btn-primary(type="button", data-dismiss="modal", @click="deleteObject(car.id)") 確定
+                        .alert.alert-info(role='alert', v-if="isEmpty")
+                            |  查無資料!
 
-            nav(aria-label="Page navigation example")#pageButton
-                .d-flex.justify-content-center 第 <% currentPage %> 頁
-                ul.pagination.justify-content-center
-                    li.page-item
-                        a.page-link(href="#", tabindex="-1", @click="firstPage") 第一頁
-                    li.page-item
-                        a.page-link(href="#", @click="previousPage") 上一頁
-                    li.page-item 
-                        a.page-link(href="#", @click="nextPage") 下一頁
+                        nav(aria-label="Page navigation example")#pageButton
+                            .d-flex.justify-content-center 第 <% currentPage %> 頁
+                            ul.pagination.justify-content-center
+                                li.page-item
+                                    a.page-link(tabindex="-1", @click="firstPage") 第一頁
+                                li.page-item
+                                    a.page-link(@click="previousPage") 上一頁
+                                li.page-item 
+                                    a.page-link(@click="nextPage") 下一頁
                 
         script(src="{{ url_for('static', filename='js/main.js') }}")
