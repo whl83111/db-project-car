@@ -6,8 +6,8 @@ FRONTEND_PATH = os.path.join('frontend', 'dist')
 
 HOST = 'localhost'
 USER = 'root'
-PASSWORD = 'x94jo6cl6'
-DB = 'cars'
+PASSWORD = '0000'
+DB = 'g03'
 
 app = Flask(__name__, template_folder=FRONTEND_PATH,
             static_folder=FRONTEND_PATH)
@@ -120,4 +120,4 @@ def delete():
         mysql.close()
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')
