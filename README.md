@@ -1,6 +1,6 @@
 # 資料庫期末專案
 
-![簡報](https://hackmd.io/p/HkdmT6EyZ#/)
+![簡報](https://tommy1994111.github.io/db-project-car/)
 
 ### 使用方法:
 1. 匯入 car.sql
