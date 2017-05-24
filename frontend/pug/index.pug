@@ -70,43 +70,7 @@ html
                 .card
                     .card-header.clearfix
                         .float-left
-                            button.btn.btn-primary(type='button', data-toggle="modal" data-target="#newObject") 新增物件
-                            .modal.fade#newObject(tabindex="-1", role="dialog", aria-labelledby="newObjectModalLabel", aria-hidden="true")
-                                .modal-dialog(role="document")
-                                    .modal-content
-                                        .modal-header
-                                            h5.modal-title#newObjectModalLabel 新增物件
-                                            button.close(type="button", data-dismiss="modal", aria-label="Close")
-                                                span(aria-hidden="true") &times;
-                                        .modal-body
-                                            form#new(action="api/insert", method="post")
-                                                .form-group
-                                                    label 圖片網址
-                                                    input.form-control(type="text", placeholder="請輸入圖片網址", name="imgLink")
-                                                .form-group
-                                                    label 廠牌
-                                                    input.form-control(type="text", placeholder="請輸入廠牌", name="brand")
-                                                .form-group
-                                                    label 車型
-                                                    input.form-control(type="text", placeholder="請輸入車型", name="carModel")
-                                                .form-group
-                                                    label 排檔方式
-                                                    input.form-control(type="text", placeholder="請輸入排檔方式", name="shift")
-                                                .form-group
-                                                    label 價格
-                                                    input.form-control(type="text", placeholder="請輸入價格", name="price")
-                                                .form-group
-                                                    label 年份
-                                                    input.form-control(type="text", placeholder="請輸入年份", name="year")
-                                                .form-group
-                                                    label 排氣量
-                                                    input.form-control(type="text", placeholder="請輸入排氣量", name="displacement")
-                                                .form-group
-                                                    label 地區
-                                                    input.form-control(type="text", placeholder="請輸入地區", name="region")
-                                        .modal-footer
-                                            button.btn.btn-secondary(type="button", data-dismiss="modal") 取消
-                                            button.btn.btn-primary(type="submit", data-dismiss="modal", form="new") 確定
+                            new-object
                         .float-right
                             form.form-inline
                                 .form-group
@@ -139,7 +103,43 @@ html
                                     td.align-middle <% car.displacement %>
                                     td.align-middle <% car.region %>
                                     td.align-middle
-                                        new-object
+                                        button.btn.btn-outline-success(type='button', data-toggle="modal" data-target="#newObject") 編輯物件
+                                        .modal.fade#newObject(tabindex="-1", role="dialog", aria-labelledby="newObjectModalLabel", aria-hidden="true")
+                                            .modal-dialog(role="document")
+                                                .modal-content
+                                                    .modal-header
+                                                        h5.modal-title#newObjectModalLabel 編輯物件
+                                                        button.close(type="button", data-dismiss="modal", aria-label="Close")
+                                                            span(aria-hidden="true") &times;
+                                                    .modal-body
+                                                        form#new(action="api/insert", method="post")
+                                                            .form-group
+                                                                label 圖片網址
+                                                                input.form-control(type="text", placeholder="請輸入圖片網址", name="imgLink")
+                                                            .form-group
+                                                                label 廠牌
+                                                                input.form-control(type="text", placeholder="請輸入廠牌", name="brand")
+                                                            .form-group
+                                                                label 車型
+                                                                input.form-control(type="text", placeholder="請輸入車型", name="carModel")
+                                                            .form-group
+                                                                label 排檔方式
+                                                                input.form-control(type="text", placeholder="請輸入排檔方式", name="shift")
+                                                            .form-group
+                                                                label 價格
+                                                                input.form-control(type="text", placeholder="請輸入價格", name="price")
+                                                            .form-group
+                                                                label 年份
+                                                                input.form-control(type="text", placeholder="請輸入年份", name="year")
+                                                            .form-group
+                                                                label 排氣量
+                                                                input.form-control(type="text", placeholder="請輸入排氣量", name="displacement")
+                                                            .form-group
+                                                                label 地區
+                                                                input.form-control(type="text", placeholder="請輸入地區", name="region")
+                                                    .modal-footer
+                                                        button.btn.btn-secondary(type="button", data-dismiss="modal") 取消
+                                                        button.btn.btn-primary(type="submit", data-dismiss="modal", form="new") 確定
                                     td.align-middle
                                         button.btn.btn-outline-danger(type="button", data-toggle="modal", data-target="#deleteObject") 刪除
                                         .modal.fade#deleteObject(tabindex="-1", role="dialog", aria-labelledby="deleteObjectLabel", aria-hidden="true")

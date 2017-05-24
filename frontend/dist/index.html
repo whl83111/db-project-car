@@ -81,57 +81,7 @@
         <div class="card">
           <div class="card-header clearfix">
             <div class="float-left">
-              <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#newObject">新增物件</button>
-              <div class="modal fade" id="newObject" tabindex="-1" role="dialog" aria-labelledby="newObjectModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="newObjectModalLabel">新增物件</h5>
-                      <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                      <form id="new" action="api/insert" method="post">
-                        <div class="form-group">
-                          <label>圖片網址</label>
-                          <input class="form-control" type="text" placeholder="請輸入圖片網址" name="imgLink">
-                        </div>
-                        <div class="form-group">
-                          <label>廠牌</label>
-                          <input class="form-control" type="text" placeholder="請輸入廠牌" name="brand">
-                        </div>
-                        <div class="form-group">
-                          <label>車型</label>
-                          <input class="form-control" type="text" placeholder="請輸入車型" name="carModel">
-                        </div>
-                        <div class="form-group">
-                          <label>排檔方式</label>
-                          <input class="form-control" type="text" placeholder="請輸入排檔方式" name="shift">
-                        </div>
-                        <div class="form-group">
-                          <label>價格</label>
-                          <input class="form-control" type="text" placeholder="請輸入價格" name="price">
-                        </div>
-                        <div class="form-group">
-                          <label>年份</label>
-                          <input class="form-control" type="text" placeholder="請輸入年份" name="year">
-                        </div>
-                        <div class="form-group">
-                          <label>排氣量</label>
-                          <input class="form-control" type="text" placeholder="請輸入排氣量" name="displacement">
-                        </div>
-                        <div class="form-group">
-                          <label>地區</label>
-                          <input class="form-control" type="text" placeholder="請輸入地區" name="region">
-                        </div>
-                      </form>
-                    </div>
-                    <div class="modal-footer">
-                      <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
-                      <button class="btn btn-primary" type="submit" data-dismiss="modal" form="new">確定</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <new-object></new-object>
             </div>
             <div class="float-right">
               <form class="form-inline">
@@ -171,7 +121,57 @@
                   <td class="align-middle"><% car.displacement %></td>
                   <td class="align-middle"><% car.region %></td>
                   <td class="align-middle">
-                    <new-object></new-object>
+                    <button class="btn btn-outline-success" type="button" data-toggle="modal" data-target="#newObject">編輯物件</button>
+                    <div class="modal fade" id="newObject" tabindex="-1" role="dialog" aria-labelledby="newObjectModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="newObjectModalLabel">編輯物件</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          </div>
+                          <div class="modal-body">
+                            <form id="new" action="api/insert" method="post">
+                              <div class="form-group">
+                                <label>圖片網址</label>
+                                <input class="form-control" type="text" placeholder="請輸入圖片網址" name="imgLink">
+                              </div>
+                              <div class="form-group">
+                                <label>廠牌</label>
+                                <input class="form-control" type="text" placeholder="請輸入廠牌" name="brand">
+                              </div>
+                              <div class="form-group">
+                                <label>車型</label>
+                                <input class="form-control" type="text" placeholder="請輸入車型" name="carModel">
+                              </div>
+                              <div class="form-group">
+                                <label>排檔方式</label>
+                                <input class="form-control" type="text" placeholder="請輸入排檔方式" name="shift">
+                              </div>
+                              <div class="form-group">
+                                <label>價格</label>
+                                <input class="form-control" type="text" placeholder="請輸入價格" name="price">
+                              </div>
+                              <div class="form-group">
+                                <label>年份</label>
+                                <input class="form-control" type="text" placeholder="請輸入年份" name="year">
+                              </div>
+                              <div class="form-group">
+                                <label>排氣量</label>
+                                <input class="form-control" type="text" placeholder="請輸入排氣量" name="displacement">
+                              </div>
+                              <div class="form-group">
+                                <label>地區</label>
+                                <input class="form-control" type="text" placeholder="請輸入地區" name="region">
+                              </div>
+                            </form>
+                          </div>
+                          <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+                            <button class="btn btn-primary" type="submit" data-dismiss="modal" form="new">確定</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                   <td class="align-middle">
                     <button class="btn btn-outline-danger" type="button" data-toggle="modal" data-target="#deleteObject">刪除</button>
